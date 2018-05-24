@@ -94,7 +94,7 @@ public class ClienteTCP extends Thread{
 	        
 	        //ESPERA EL HASH MD5 DEL SERVIDOR Y CALCULA EL HASH MD5 DEL ARCHIVO RECIBIDO DESCIFRADO
 	        if(lectura != null) {
-	        	parametro = inFromServer.readLine();
+	        	parametro = inFromServer.readLine(); //MD5 del servidor
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 	        	messageDigest.reset();
 	        	byte[] archivoDescifrado = descifrar.descifrarArchivo(lectura, claveCliente);

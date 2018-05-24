@@ -18,7 +18,7 @@ public class ConexionClient extends Thread {
 	
 	public void iniciarProceso() {
 		try {
-			Socket socketCliente = new Socket(ip, 15210);
+			Socket socketCliente = new Socket(ip, 15200);
 			
 	        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
  
