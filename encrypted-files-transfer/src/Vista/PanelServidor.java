@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -325,8 +326,10 @@ private static final long serialVersionUID = 1877L;
 			 int returnVal = fc.showOpenDialog(this);
 	         if (returnVal == JFileChooser.APPROVE_OPTION) {
 	              File file = fc.getSelectedFile();
+	              if(file!=null) {
 	              principal.elegirArchivo(file);
 	              txtNombreArchivo.setText(file.getName());
+	              }
 	         }
 		}else if(p.equals("enviar")) {
 			principal.iniciarProceso();

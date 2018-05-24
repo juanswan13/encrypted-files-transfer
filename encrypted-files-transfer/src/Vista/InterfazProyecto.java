@@ -6,6 +6,10 @@ import java.awt.Toolkit;
 import java.io.File;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import Control.ConexionClient;
+import Control.ConexionServer;
 
 
 
@@ -27,6 +31,9 @@ public class InterfazProyecto extends JFrame {
 		panelServidor.setVisible(true);
 		
 		add(panelServidor, BorderLayout.CENTER);
+		
+		ConexionServer conexionServer = new ConexionServer();
+		conexionServer.start();
 	}
 	
 	public void centrarPantalla() {
@@ -35,7 +42,16 @@ public class InterfazProyecto extends JFrame {
 		setLocation((pantalla.width - ventana.width) / 2, (pantalla.height - ventana.height) / 2);
 	}
 	public void iniciarProceso() {
-		
+		if(archivo!=null) {
+			ConexionClient conexionCliente = new ConexionClient(archivo);
+			conexionCliente.start();
+			
+		}
+		else {
+      	  JOptionPane.showMessageDialog(null,
+					"Por favor seleccione un archivo para iniciar la transferencia",
+					"No hay archivo seleccionado", JOptionPane.ERROR_MESSAGE);
+        }
 	}
 	
 	public void elegirArchivo(File arc) {
