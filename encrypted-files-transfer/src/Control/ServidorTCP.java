@@ -14,7 +14,14 @@ import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
+
+import javax.crypto.KeyAgreement;
+import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ServidorTCP implements Runnable{
 	
@@ -26,6 +33,10 @@ public class ServidorTCP implements Runnable{
 	*/
 	public void IntercambiarArchivos(byte[] archivoSinCifrar) {
 		try {
+			int k=6;
+		    BigInteger p;
+		    BigInteger g;
+		    
 			String entry;
 			ServerSocket socketServidor = new ServerSocket();
 			Socket client = socketServidor.accept();
@@ -41,9 +52,24 @@ public class ServidorTCP implements Runnable{
 	        
 	        OutFromServer.write("GENERAR DH");
 	        entry = inFromClient.readLine();
+	        g = random(k);
 	        if(entry.equals("LISTO PARA GENERAR DH")) {
-	        	
+	        	OutFromServer.write(g.toString());
 	        }
+	        entry = inFromClient.readLine();
+	        p = new BigInteger(entry);
+	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); //CREA LOS PARAMETROS PARA LA CREACION DE LA CLAVE
+	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH", "BC");
+	        serverKeyGen.initialize(dhParams, new SecureRandom());
+	        KeyAgreement serverKeyAgree = KeyAgreement.getInstance("DH", "BC");
+	        KeyPair serverPair = serverKeyGen.generateKeyPair();
+	        Key clientePublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL CLIENTE
+	        oos.writeObject(serverPair.getPublic()); //ENVIA CLAVE PUBLICA DEL SERVIDOR
+	        serverKeyAgree.init(serverPair.getPrivate());
+	        Key claveServer = serverKeyAgree.doPhase(clientePublicKey, true); 
+	        
+	        //MessageDigest hash = MessageDigest.getInstance("SHA1", "BC");
+	        //byte[] clienteSharedSecret = hash.digest(clienteKeyAgree.generateSecret());
 	        
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -63,6 +89,7 @@ public class ServidorTCP implements Runnable{
         }
         return new BigInteger(new String(ba));
     }
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

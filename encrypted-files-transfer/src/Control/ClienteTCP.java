@@ -16,9 +16,9 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ClienteTCP implements Runnable{
 	
@@ -140,6 +140,7 @@ public class ClienteTCP implements Runnable{
         }
         return new BigInteger(new String(ba));
     }
+    
 
 	@Override
 	public void run() {
