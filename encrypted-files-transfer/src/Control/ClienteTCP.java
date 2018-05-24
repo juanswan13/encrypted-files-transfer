@@ -125,8 +125,12 @@ public class ClienteTCP implements Runnable{
 	         }
 	         return str.toUpperCase();
 	      }
-	   }     
+	   }
 	
+	/**
+	* Crea un numero de formato BigInteger aleatorio. <br>
+	* @param k numero entero mayor que cero
+	*/
     public BigInteger random(int k){
     	SecureRandom sr = new SecureRandom();
         byte[] ba = new byte[k];
