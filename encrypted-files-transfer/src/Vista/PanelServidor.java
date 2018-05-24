@@ -9,11 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.net.InetAddress;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,6 +40,7 @@ private static final long serialVersionUID = 1877L;
 	private JProgressBar progressBar;
 	private JButton btnSubir, btnEnviar;
 	private JList lista;
+	private JFileChooser fc;
 	
 	public PanelServidor(InterfazProyecto interfaz){
 		setPrincipal(interfaz);
@@ -49,6 +52,7 @@ private static final long serialVersionUID = 1877L;
 	    GridBagConstraints gbc = new GridBagConstraints();	
 	    gbc.insets = new Insets(2,2,2,2);
 	    gbc.fill = GridBagConstraints.BOTH;
+	    fc = new JFileChooser();
 	    
 //DISEÑO DE LA LINEA DE IP.
 	    String ipLoc = "";
@@ -316,8 +320,14 @@ private static final long serialVersionUID = 1877L;
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		String p = e.getActionCommand();
+		if(p.equals("subir")){
+			 int returnVal = fc.showOpenDialog(this);
+	         if (returnVal == JFileChooser.APPROVE_OPTION) {
+	              File file = fc.getSelectedFile();
+	              principal.elegirArchivo(file);
+	         }
+		}
 	}
 
 

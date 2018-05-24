@@ -2,6 +2,7 @@ package Control;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -16,7 +17,7 @@ public class EncryptFile {
 		
 	}
 	
-	public byte[] leerArchivo(String ruta) {
+	public byte[] leerArchivo(File ruta) {
 		 byte[] archivoEnBytes = null;
 		    FileInputStream theFIS = null;
 		    BufferedInputStream theBIS = null;
