@@ -6,9 +6,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
@@ -26,7 +29,6 @@ public class ClienteTCP implements Runnable{
 	*/
 	public void IntercambiarArchivos() {
 		try {
-			int n=4;
 	        int k=6;
 		    BigInteger p;
 		    BigInteger g;
@@ -37,14 +39,16 @@ public class ClienteTCP implements Runnable{
 			//CONEXION
 	        Socket socketCliente = new Socket("127.0.0.1", 6789);
 	        
-	        
+	        ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
+	        ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+	        	        
 	        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
 	        BufferedWriter OutFromClient = new BufferedWriter( new OutputStreamWriter( socketCliente.getOutputStream() ) );
 	        
 	        InputStream in = socketCliente.getInputStream();
 	        DataInputStream dataIn = new DataInputStream(in);
-	        DataOutputStream dataOut = new DataOutputStream(socketCliente.getOutputStream());
 	       
+	        //GENERACION DE CLAVE COMPARTIDA POR MEDIO DEL ALGORITMO DIFFIE HELLMAN
 	        parametro = inFromServer.readLine();
 	        if(parametro.equalsIgnoreCase("GENERAR DH")) {
 	        	OutFromClient.write("LISTO PARA GENERAR DH");
@@ -58,7 +62,11 @@ public class ClienteTCP implements Runnable{
 	        clienteKeyGen.initialize(dhParams, new SecureRandom());
 	        KeyAgreement clienteKeyAgree = KeyAgreement.getInstance("DH", "BC");
 	        KeyPair clientePair = clienteKeyGen.generateKeyPair();
-	        OutFromClient.write(p.toString());
+	        oos.writeObject(clientePair.getPublic()); //ENVIA CLAVE PUBLICA DEL CLIENTE
+	        Key serverPublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL SERVIDOR
+	        Key claveCliente = clienteKeyAgree.doPhase(serverPublicKey, true); 
+	        //MessageDigest hash = MessageDigest.getInstance("SHA1", "BC");
+	        //byte[] clienteSharedSecret = hash.digest(clienteKeyAgree.generateSecret());
 	        
 	        
 	        //ESPERA INICIO DE INTERACCIÓN
@@ -78,12 +86,12 @@ public class ClienteTCP implements Runnable{
 		        OutFromClient.write("RECIBIDO");
 	        }
 	        
-	        //ESPERA EL HASH MD5 DEL SERVIDOR Y CALCULA EL HASH MD5 DEL ARCHIVO RECIBIDO
+	        //ESPERA EL HASH MD5 DEL SERVIDOR Y CALCULA EL HASH MD5 DEL ARCHIVO RECIBIDO DESCIFRADO
 	        if(lectura != null) {
 	        	parametro = inFromServer.readLine();
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 	        	messageDigest.reset();
-	        	messageDigest.update(lectura);
+	        	messageDigest.update("DESCIFRAR ARCHIVO Y PONERLO AQUI !!".getBytes());
 	        	byte[] resultByte = messageDigest.digest();
 	        	String MD5 = bytesToHex(resultByte);
 	        	if(parametro.equalsIgnoreCase(MD5))
