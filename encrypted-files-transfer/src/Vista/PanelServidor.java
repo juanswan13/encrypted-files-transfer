@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.net.InetAddress;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -50,6 +51,12 @@ private static final long serialVersionUID = 1877L;
 	    gbc.fill = GridBagConstraints.BOTH;
 	    
 //DISEÑO DE LA LINEA DE IP.
+	    String ipLoc = "";
+	    try {
+	    	ipLoc = InetAddress.getLocalHost().getHostAddress();
+	    }catch(Exception e) {
+	    	e.printStackTrace();
+	    }
 	    lblIp = new JLabel("    IP Local : ");
 	    txtIpOct1 = new JTextField(3);
 	    txtIpOct1.setEditable(false);
@@ -138,6 +145,10 @@ private static final long serialVersionUID = 1877L;
 	    gbc.gridx = 10;
 	    gbc.gridy = 2;
 	    add(new JLabel("         "), gbc);
+	    txtIpOct1.setText(ipLoc.replace('.', 'f').split("f")[0]+"");
+	    txtIpOct2.setText(ipLoc.replace('.', 'f').split("f")[1]+"");
+	    txtIpOct3.setText(ipLoc.replace('.', 'f').split("f")[2]+"");
+	    txtIpOct4.setText(ipLoc.replace('.', 'f').split("f")[3]+"");
 //FIN DE DISEÑO LINEA IP
 	    
 //DISEÑO DE LA LINEA DE IP REMOTA.

@@ -19,7 +19,12 @@ import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
 
-public class ServidorTCP implements Runnable{
+public class ServidorTCP extends Thread{
+	private byte[] archivoSinCifrar;
+	
+	public ServidorTCP(byte[] arch) {
+		archivoSinCifrar = arch;
+	}
 	
 	/**
 	* Realiza el proceso de intercambio de un archivo que se va a enviar a un cliente usando el protocolo TCP <br>
@@ -27,7 +32,7 @@ public class ServidorTCP implements Runnable{
 	* <b>post: </b> Se ha enviado el archivo, Se ha comprobado su correcta llegada mediante el hash MD5.
 	* @param archivoSinCifrar El archivo que fue seleccionado almacenado en un arreglo de bytes
 	*/
-	public void IntercambiarArchivos(byte[] archivoSinCifrar) {
+	public void IntercambiarArchivos() {
 		try {
 			int k=6;
 		    BigInteger p;
@@ -36,9 +41,8 @@ public class ServidorTCP implements Runnable{
 		    EncryptFile encrypt = new EncryptFile();
 		    
 			String entry;
-			ServerSocket socketServidor = new ServerSocket();
-			Socket client = socketServidor.accept();
-			
+			ServerSocket socketServidor = new ServerSocket(15210);
+			Socket client = socketServidor.accept();			
 			ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 	        	        

@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.security.Key;
 import java.security.KeyPair;
@@ -18,8 +19,13 @@ import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
 
-public class ClienteTCP implements Runnable{
+public class ClienteTCP extends Thread{
 	
+	private InetAddress IPServer;
+	
+	public ClienteTCP(InetAddress IPserver) {
+		IPServer = IPserver;
+	}
 	
 	/**
 	* Realiza el proceso de intercambio de un archivo que esta recibiendo desde un servidor por medio del protocolo TCP. <br>
@@ -35,8 +41,9 @@ public class ClienteTCP implements Runnable{
 			String parametro;
 			byte[] lectura = null;
 			boolean correcto = false;
+			
 			//CONEXION
-	        Socket socketCliente = new Socket("127.0.0.1", 6789);
+	        Socket socketCliente = new Socket(IPServer, 15210);
 	        
 	        ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
