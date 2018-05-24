@@ -3,7 +3,6 @@ package Control;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -18,7 +17,6 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 public class ClienteTCP implements Runnable{
 	
@@ -32,6 +30,7 @@ public class ClienteTCP implements Runnable{
 	        int k=6;
 		    BigInteger p;
 		    BigInteger g;
+		    DecryptFile descifrar = new DecryptFile();
 		    
 			String parametro;
 			byte[] lectura = null;
@@ -91,7 +90,8 @@ public class ClienteTCP implements Runnable{
 	        	parametro = inFromServer.readLine();
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 	        	messageDigest.reset();
-	        	messageDigest.update("DESCIFRAR ARCHIVO Y PONERLO AQUI !!".getBytes());
+	        	byte[] archivoDescifrado = descifrar.descifrarArchivo(lectura, claveCliente);
+	        	messageDigest.update(archivoDescifrado);
 	        	byte[] resultByte = messageDigest.digest();
 	        	String MD5 = bytesToHex(resultByte);
 	        	if(parametro.equalsIgnoreCase(MD5))
