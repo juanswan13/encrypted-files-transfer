@@ -56,6 +56,7 @@ private static final long serialVersionUID = 1877L;
 	    fc = new JFileChooser();
 	    
 //DISEÑO DE LA LINEA DE IP.
+	    //OBTENER LA IP OBTENIDO DE: https://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
 	    String ipLoc = "";
 	    try {
 	    	 DatagramSocket socket = new DatagramSocket();
@@ -319,7 +320,7 @@ private static final long serialVersionUID = 1877L;
 	    gbc.gridwidth =  GridBagConstraints.REMAINDER;
 	    gbc.gridx = 0;
 	    gbc.gridy = 5;
-	    add(progressBar, gbc);
+	    //add(progressBar, gbc);
 	}
 	
 	

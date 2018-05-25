@@ -27,7 +27,7 @@ public class InterfazProyecto extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		//setResizable(false);
-		setSize(516, 366);
+		setSize(355, 315);
 		centrarPantalla();
 		
 		panelServidor = new PanelServidor(this);
