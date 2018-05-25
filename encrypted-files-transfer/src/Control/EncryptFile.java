@@ -13,15 +13,17 @@ import javax.crypto.NoSuchPaddingException;
 
 public class EncryptFile {
 	
+	 private byte[] params;
+	
 	public EncryptFile(){
-		
+		params = null;
 	}
 	
 	public byte[] leerArchivo(File ruta) {
 		 byte[] archivoEnBytes = null;
 		    FileInputStream theFIS = null;
 		    BufferedInputStream theBIS = null;
-		    byte[] buffer = new byte[8 * 1024];
+		    byte[] buffer = new byte[1024];
 		    int leido = 0;
 		    ByteArrayOutputStream theBOS = new ByteArrayOutputStream();
 
@@ -58,7 +60,9 @@ public class EncryptFile {
 		    }
 		    return archivoEnBytes;
 	}
-	
+	public byte[] getParams() {
+		return params;
+	}
 	public byte[] cifrarArchivo(byte[] archivo, Key secretKey) {
 		
 		byte[] encryptedFile = null;
@@ -67,6 +71,7 @@ public class EncryptFile {
 		Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); 
 		aesCipher.init(Cipher.ENCRYPT_MODE, secretKey); 
 		encryptedFile = aesCipher.doFinal(archivo);
+		params = aesCipher.getParameters().getEncoded();
 		}catch (NoSuchPaddingException e) { 
 			System.err.println("Padding problem: " + e); 
 		} catch (NoSuchAlgorithmException e) { 

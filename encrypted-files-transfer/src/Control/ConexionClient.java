@@ -22,10 +22,11 @@ public class ConexionClient extends Thread {
 			Socket socketCliente = new Socket(ip, 15200);
 			System.out.println("socket iniciado");
 	        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
- 
 	        String txt = inFromServer.readLine();
+	        System.out.println(txt);
 	        if(txt.equalsIgnoreCase("ENVIAR")) {
 	        	ServidorTCP server = new ServidorTCP(archivo);
+	        	System.out.println("Iniciando servidor");
 	        	server.run();
 	        }else {
 				JOptionPane.showMessageDialog(null,

@@ -17,7 +17,9 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ServidorTCP extends Thread{
 	private byte[] archivoSinCifrar;
@@ -35,6 +37,7 @@ public class ServidorTCP extends Thread{
 	public void IntercambiarArchivos() {
 		try {
 			int k=6;
+			int bitLength = 1024;
 		    BigInteger p;
 		    BigInteger g;
 		    String MD5 = "";
@@ -42,7 +45,9 @@ public class ServidorTCP extends Thread{
 		    
 			String entry;
 			ServerSocket socketServidor = new ServerSocket(15210);
-			Socket client = socketServidor.accept();			
+			System.out.println("Ya inicializo el SocketServidor");
+			Socket client = socketServidor.accept();	
+			System.out.println("Ya se conecto el usuario para la descarga");
 			ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 	        	        
@@ -53,30 +58,44 @@ public class ServidorTCP extends Thread{
 	        DataOutputStream dataOut = new DataOutputStream(out);
 	        
 	        //GENERACION DE CLAVE COMPARTIDA POR MEDIO DEL ALGORITMO DIFFIE HELLMAN
-	        OutFromServer.write("GENERAR DH");
+	        OutFromServer.write("GENERAR DH\n");
+	        OutFromServer.flush();
 	        entry = inFromClient.readLine();
-	        g = random(k);
+	        System.out.println("From Client: " + entry);
+	        //g = random(k);
+	        SecureRandom rnd = new SecureRandom();
+	        g= BigInteger.probablePrime(bitLength, rnd);
 	        if(entry.equals("LISTO PARA GENERAR DH")) {
-	        	OutFromServer.write(g.toString());
+	        	OutFromServer.write(g.toString()+"\n");
+	        	System.out.println("Parametro G generado y enviado" + "g = " + g + "");
+	        	OutFromServer.flush();
 	        }
 	        entry = inFromClient.readLine();
+	        System.out.println(entry);
 	        p = new BigInteger(entry);
+	        System.out.println("Parametro P: " + p + "" );
 	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); //CREA LOS PARAMETROS PARA LA CREACION DE LA CLAVE
-	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH", "BC");
+	        System.out.println("parametros diffie Hellman generados");
+	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH");
 	        serverKeyGen.initialize(dhParams, new SecureRandom());
-	        KeyAgreement serverKeyAgree = KeyAgreement.getInstance("DH", "BC");
+	        KeyAgreement serverKeyAgree = KeyAgreement.getInstance("DH");
 	        KeyPair serverPair = serverKeyGen.generateKeyPair();
 	        Key clientePublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL CLIENTE
-	        oos.writeObject(serverPair.getPublic()); //ENVIA CLAVE PUBLICA DEL SERVIDOR
+	        System.out.println("Recibi clave publica cliente: " + clientePublicKey.toString());
+	        oos.writeObject(serverPair.getPublic());oos.flush(); //ENVIA CLAVE PUBLICA DEL SERVIDOR
+	        System.out.println("Envie clave publia (servidor): " + serverPair.getPublic().toString());
 	        serverKeyAgree.init(serverPair.getPrivate());
-	        Key claveServer = serverKeyAgree.doPhase(clientePublicKey, true); 	        
-	        //MessageDigest hash = MessageDigest.getInstance("SHA1", "BC");
-	        //byte[] clienteSharedSecret = hash.digest(clienteKeyAgree.generateSecret());
-	        
+	        serverKeyAgree.doPhase(clientePublicKey, true);
+	        byte[] serverSharedSecret = serverKeyAgree.generateSecret();
+	        SecretKeySpec claveServer = new SecretKeySpec(serverSharedSecret, 0, 16, "AES");
+	        System.out.println("Clave secreta: "+ claveServer.toString());
 	        
 	        //ESPERA INICIO DE INTERACCIÓN
-	        OutFromServer.write("INICIO");
+	        OutFromServer.write("INICIO\n");
+	        OutFromServer.flush();
+	        System.out.println("Enviando INICIO para iniciar Transferencia");
 	        entry = inFromClient.readLine();
+	        System.out.println("From Client: " +  entry);
 	        if(entry.equalsIgnoreCase("LISTO PARA INICIO")) {
 	        	//CALCULA HASH MD5 ANTES DE CIFRAR EL ARCHIVO
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
@@ -84,28 +103,45 @@ public class ServidorTCP extends Thread{
 	        	messageDigest.update(archivoSinCifrar);
 	        	byte[] resultByte = messageDigest.digest();
 	        	MD5 = bytesToHex(resultByte);
+	        	System.out.println("MD5: " + MD5);
 	        }
 	        //CIFRA EL ARCHIVO Y LO ENVIA AL CLIENTE
+	        System.out.println(archivoSinCifrar.length);
 	        byte[] archivoCifrado = encrypt.cifrarArchivo(archivoSinCifrar, claveServer);
-	        OutFromServer.write(""+ 0 + "," + archivoCifrado.length);
+	        OutFromServer.write(""+ 0 + "," + archivoCifrado.length+"\n");
+	        OutFromServer.flush();
+	        System.out.println("Enviando info de control: " + ""+ 0 + "," + archivoCifrado.length);
 	        entry = inFromClient.readLine();
+	        System.out.println("From Client:" + entry);
 	        if(entry.equalsIgnoreCase("OK")) {
 	        	dataOut.write(archivoCifrado);
+	        	dataOut.flush();
+	        	System.out.println("archivo enviado");
 	        }
 	        
 	        //ESPERTA CONFIRMACION DEL CLIENTE Y ENVIA EL HASH MD5 CALCULADO PREVIAMENTE
 	        entry = inFromClient.readLine();
+	        System.out.println("From Client: " + entry);
+	        byte[] params = encrypt.getParams(); 
+	        OutFromServer.write(""+ 0 + "," + params.length+"\n");
+	        OutFromServer.flush();
+	        System.out.println("Out To Client: " + ""+ 0 + "," + params.length);
+	        dataOut.write(params);
+        	dataOut.flush();
 	        if(entry.equalsIgnoreCase("RECIBIDO")) {
-	        	OutFromServer.write(MD5);
+	        	OutFromServer.write(MD5+"\n");
+	        	OutFromServer.flush();
 	        }
 	        
 	        //ESPERA ESTADO DE LA TRANSFERENCIA
 	        entry = inFromClient.readLine();
+	        System.out.println("From Client: " + entry);
 	        if(entry.equalsIgnoreCase("TRANSFERENCIA CORRECTA")) {
 	        	
 	        }else {
 	        	
-	        }   
+	        } 
+	        System.out.println("Se cierra el socket");
 	        socketServidor.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -145,6 +181,7 @@ public class ServidorTCP extends Thread{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		System.out.println("entro a run de servidor TCP");
 		IntercambiarArchivos();
 	}
 
