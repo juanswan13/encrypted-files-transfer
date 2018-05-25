@@ -17,7 +17,6 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -38,7 +37,6 @@ public class ServidorTCP extends Thread{
 	*/
 	public void IntercambiarArchivos() {
 		try {
-			int k=6;
 			int bitLength = 1024;
 		    BigInteger p;
 		    BigInteger g;

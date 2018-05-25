@@ -12,35 +12,44 @@ public class ConexionServer extends Thread {
 	public void esperarProceso() {
 		ServerSocket socketServidor;
 			try {
+				//Creando nuevo socket de conexion en el puerto 15200
 				socketServidor = new ServerSocket(15200);
 				while(true) {
+					//Espera y acepta cuando reciba conexion 
 					Socket client = socketServidor.accept();
-					System.out.println("conectado?: "+client.isBound());
+					System.out.println("Nueva conexion");
+					
+					//Conexion y mensaje con IP remota y confimacion 
 					BufferedWriter OutFromServer = new BufferedWriter( new OutputStreamWriter(client.getOutputStream() ) );
 				    String IPremota= client.getInetAddress().toString();
-				    String msj = "Desde la direcciÃ³n: " + IPremota + " Desea enviarte un archivo. Â¿Quieres recibirlo ?";
+				    String msj = "Desde la direccion: " + IPremota + " Desea enviarte un archivo. ¿Quieres recibirlo?";
 				    int dialogResult = JOptionPane.showConfirmDialog (null, msj,"Warning",JOptionPane.YES_NO_OPTION);
+				    
+				    //Da orden de enviar al cliente y corre clienteTCP (se invierten roles)
 				    if(dialogResult == JOptionPane.YES_OPTION){
 				    	OutFromServer.write("ENVIAR\n");
 				    	OutFromServer.flush();
-				    	System.out.println("Ya escribí enviar");
+				    	System.out.println("ENVIAR transmitido");
 				    	sleep(3000);
 				    	ClienteTCP cliente = new ClienteTCP(client.getInetAddress());
 				    	cliente.run();
-				    }else {
+				    }
+				    //Da orden de cancelar al cliente y cierra canal
+				    else {
 				    	OutFromServer.write("CANCELADO");
 				    	OutFromServer.flush();
+				    	OutFromServer.close();
 			    }
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				JOptionPane.showConfirmDialog (null, "Ha ocurrido un error en la conexion","Warning",JOptionPane.ERROR_MESSAGE);
 			}
 		
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		esperarProceso();
 	}
 

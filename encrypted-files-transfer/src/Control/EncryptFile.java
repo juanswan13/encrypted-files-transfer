@@ -14,7 +14,6 @@ import javax.crypto.NoSuchPaddingException;
 public class EncryptFile {
 	
 	 private byte[] params;
-	 private String nombreArchivo;
 	
 	public EncryptFile(){
 		params = null;

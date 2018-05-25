@@ -43,7 +43,6 @@ public class ConexionClient extends Thread {
 	}
 	
 	public void run() {
-		// TODO Auto-generated method stub
 		iniciarProceso();
 	}
 }

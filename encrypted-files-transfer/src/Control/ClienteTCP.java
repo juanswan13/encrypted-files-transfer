@@ -17,15 +17,16 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import javax.crypto.KeyAgreement;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ClienteTCP extends Thread{
 	
-	private InetAddress IPServer;
+	//IP del servidor remoto 
+	private InetAddress IPServer;	
 	
 	public ClienteTCP(InetAddress IPserver) {
+		//Se inicializa IP del servidor
 		IPServer = IPserver;
 	}
 	
@@ -35,124 +36,172 @@ public class ClienteTCP extends Thread{
 	*/
 	public void IntercambiarArchivos() {
 		try {
-	        int k=6;
+			//Se declaran las variables de las llaves 
 		    BigInteger p;
 		    BigInteger g;
+		    
+		    //Se declara la clase para desencriptar
 		    DecryptFile descifrar = new DecryptFile();
 		    
+		    //Se declaran las variables de lectura, almacenamiento y control
 			String parametro;
 			byte[] lectura = null;
 			byte[] params = null;
 			byte[] archivoDescifrado = null;
 			boolean correcto = false;
 			
-			//CONEXION
+			//Se abre el puerto al servidor para transmitir
 			System.out.println("Abriendo puerto para recibir");
 	        Socket socketCliente = new Socket(IPServer, 15210);
 	        
+	        //Crea los flujos de objetos
 	        ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
-	        	        
+	        
+	        //Crea los flujos de escritura y lectura
 	        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
 	        BufferedWriter OutFromClient = new BufferedWriter( new OutputStreamWriter(socketCliente.getOutputStream()));
 	        
+	        //Crea el flujo de lectura de datos
 	        InputStream in = socketCliente.getInputStream();
 	        DataInputStream dataIn = new DataInputStream(in);
 	       
-	        //GENERACION DE CLAVE COMPARTIDA POR MEDIO DEL ALGORITMO DIFFIE HELLMAN
+	        //Lectura de la orden de inicio del servidor
 	        parametro = inFromServer.readLine();
-	        System.out.println("Me llego clave compartida: "+parametro);
+	        System.out.println("Mensaje del servidor: "+parametro);
 	        if(parametro.equalsIgnoreCase("GENERAR DH")) {
+	        	
+	        	//Mensaje de confirmacion al servidor
 	        	OutFromClient.write("LISTO PARA GENERAR DH\n");
 	        	OutFromClient.flush();
 	        }	
-	        parametro = inFromServer.readLine();//RECIBE EL PARAMETRO G
+	        
+	        //Lectura del parametro G del servidor
+	        parametro = inFromServer.readLine();
 	        System.out.println("Me llega parametro G: "+parametro);
 	        g = new BigInteger(parametro);
-	        //p = random(k);
+	        
+	        //Se genera el parametro P del cliente
 	        SecureRandom secureP = new SecureRandom();
 	        p = BigInteger.probablePrime(1024, secureP);
-	        OutFromClient.write(p.toString()+"\n"); //ENVIA EL PARAMETRO P
+	        
+	        //Transmision del parametro P
+	        OutFromClient.write(p.toString()+"\n"); 
 	        OutFromClient.flush();
-	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); //CREA LOS PARAMETROS PARA LA CREACION DE LA CLAVE
+	        
+	        //Se usan los parametros G y P para generar la clave
+	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); 
 	        KeyPairGenerator clienteKeyGen = KeyPairGenerator.getInstance("DH");
 	        clienteKeyGen.initialize(dhParams, new SecureRandom());
-	        KeyAgreement clienteKeyAgree = KeyAgreement.getInstance("DH");
 	        KeyPair clientePair = clienteKeyGen.generateKeyPair();
-	        oos.writeObject(clientePair.getPublic()); //ENVIA CLAVE PUBLICA DEL CLIENTE
-	        Key serverPublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL SERVIDOR
-	        System.out.println(serverPublicKey.toString());
-	        clienteKeyAgree.init(clientePair.getPrivate());
-	        clienteKeyAgree.doPhase(serverPublicKey, true); 
-	        byte[] clienteSharedSecret =clienteKeyAgree.generateSecret();
-	      
-
 	        
+	        
+	        //Se obtiene la clave publica y se transmite al servidor
+	        oos.writeObject(clientePair.getPublic()); 
+	        
+	        //Se obtiene la clave publica del servidor
+	        Key serverPublicKey = (Key) ois.readObject(); 
+	        System.out.println(serverPublicKey.toString());
+	        
+	        //Se crea el keyagreemente para comprobar las llaves
+	        KeyAgreement clienteKeyAgree = KeyAgreement.getInstance("DH");
+	        //Clave privada del cliente
+	        clienteKeyAgree.init(clientePair.getPrivate());
+	        //Clave publica del servidor
+	        clienteKeyAgree.doPhase(serverPublicKey, true);
+	        
+	        //Genera la clave secreta
+	        byte[] clienteSharedSecret =clienteKeyAgree.generateSecret();	        
 	        SecretKeySpec claveCliente = new SecretKeySpec(clienteSharedSecret,0,16, "AES");
 	        
 	        
-	        //ESPERA INICIO DE INTERACCIÓN
+	        //Lectura de inicio de transmision del servidor
 	        parametro = inFromServer.readLine();
 	        if(parametro.equalsIgnoreCase("INICIO")) {
+	        	//Confirmacion inicio de transmision al servidor
 	        	OutFromClient.write("LISTO PARA INICIO\n");
 	        	OutFromClient.flush();
-	        	System.out.println("Escribi LISTO PARA INICIO");
+	        	System.out.println("Inicio transmision");
 	        }
 	        
-	        //ESPERA PARAMETRO DE LECTURA: inicio y TAM
+	        //Espera los parametros para iniciar la lectura del archivo
 	        parametro = inFromServer.readLine();
-	        System.out.println("Recibi: "+parametro);
+	        System.out.println("Recibido: "+parametro);
+	        //Se inicializan los parametros de tamano y byte de inicio del archivo
 	        int inicio = Integer.parseInt(parametro.split(",")[0]);
 	        int tam = Integer.parseInt(parametro.split(",")[1]);
 	        if(tam > 0) {
+	        	//Mensaje de confirmacion de inicio de la transmision
 		        OutFromClient.write("OK\n");
 		        OutFromClient.flush();
+		        
+		        //Lectura del canal 
 		        lectura = new byte[tam];
 		        dataIn.readFully(lectura, inicio, tam);
+		        
+		        //Mensaje de confirmacion de recepcion de la transmision del archivo
 		        OutFromClient.write("RECIBIDO\n");
 		        OutFromClient.flush();
-		        System.out.println("Escribi OK y RECIBIDO");
+		        System.out.println("Transmision: RECIBIDO");
 	        }
 	        
+	        //Lectura de inicio y tamano del parametro de desencriptacion
 	        parametro = inFromServer.readLine();	        
 	        inicio = Integer.parseInt(parametro.split(",")[0]);
 	        tam = Integer.parseInt(parametro.split(",")[1]);
 	       if(tam > 0) {
+	    	   //Lectura del parametro de desencriptacion
 	    	   params = new byte[tam];
 	    	   dataIn.readFully(params, inicio, tam);
-	    	   System.out.println("Recibi "+parametro+" "+tam);
+	    	   System.out.println("Recibi "+parametro);
 	       }
 	        
-	        //ESPERA EL HASH MD5 DEL SERVIDOR Y CALCULA EL HASH MD5 DEL ARCHIVO RECIBIDO DESCIFRADO
+	        //Comprobacion archivo no vacio
 	        if(lectura != null) {
-	        	parametro = inFromServer.readLine(); //MD5 del servidor
+	        	//Lectura del MD5 transmitido desde el servidor
+	        	parametro = inFromServer.readLine(); 
 	        	System.out.println("Recibi: "+parametro);
+	        	
+	        	//Calcula el hash del MD5 del servidor
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 	        	messageDigest.reset();	        	
+	        	
+	        	//Descifra el archivo y lo pasa al messageDigest
 	        	archivoDescifrado = descifrar.descifrarArchivo(lectura, claveCliente, params);
 	        	messageDigest.update(archivoDescifrado);
+	        	
+	        	//Se calcula el MD5 en bytes
 	        	byte[] resultByte = messageDigest.digest();
+	        	
+	        	//Se pasa de bytes a HEX
 	        	String MD5 = bytesToHex(resultByte);
+	        	//Se compara MD5 del archivo descifrado con el transmitido por el servidor
 	        	if(parametro.equalsIgnoreCase(MD5))
 	        		correcto = true;
 	        }
 	        
-	        //RESPONDE AL SERVIDOR EL ESTADO DE LA TRANSFERENCIA
+	        //Lectura nombre del archivo
+	        parametro = inFromServer.readLine();
+	        
+	        //Mensaje de confirmacion de la transmision
 	        if(correcto) {
-	        	parametro = inFromServer.readLine();
 	        	OutFromClient.write("TRANSFERENCIA CORRECTA\n");
+	        	
+	        	//Se guarda el archivo en la carpeta /Transferencia del proyecto
 	        	descifrar.escribirArchivo(archivoDescifrado, parametro);
 	        	System.out.println("Mande transferencia correcta");
-	        }else {
+	        }
+	        //Mensaje de informe de error de la transmision
+	        else {
 	        	OutFromClient.write("TRANSFERENCIA INCORRECTA\n");
 	        	System.out.println("Mande transferencia incorrecta");
 	        }
+	        //Se cierran los canales y el socket
 	        OutFromClient.flush();
-	        
-	        
+	        oos.close();
 	        OutFromClient.close();
 	        socketCliente.close();
-	        System.out.println("Conexi�n cerrada");
+	        System.out.println("Conexion cerrada");
 		}catch(Exception e){
 			e.printStackTrace();
 		}

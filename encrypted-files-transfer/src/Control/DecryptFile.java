@@ -6,7 +6,6 @@ import java.security.AlgorithmParameters;
 import java.security.Key;
 
 import javax.crypto.Cipher;
-import javax.xml.crypto.AlgorithmMethod;
 
 public class DecryptFile {
 	
@@ -46,10 +45,14 @@ public class DecryptFile {
 	public byte[] descifrarArchivo(byte[] encryptedFile, Key secretKey, byte[] encodedParams) {
 		byte[] decryptedFile = null; 
 		try {
+			//Se generan parametros del algoritmo de descifrado
 		     AlgorithmParameters aesParams = AlgorithmParameters.getInstance("AES");
+		     //Se pasan parametros de cifrado del servidor
 		     aesParams.init(encodedParams);
+		     //Inicializar y configurar Cipher (descifrador)
 			 Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); 
 			 aesCipher.init(Cipher.DECRYPT_MODE, secretKey, aesParams);
+			 //Descifra el archivo
 	         decryptedFile = aesCipher.doFinal(encryptedFile);
 		 }catch(Exception e) {
 			 e.printStackTrace();
