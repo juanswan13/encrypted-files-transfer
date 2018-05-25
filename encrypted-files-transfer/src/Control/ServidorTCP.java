@@ -42,12 +42,16 @@ public class ServidorTCP extends Thread{
 		    BigInteger g;
 		    String MD5 = "";
 		    EncryptFile encrypt = new EncryptFile();
-		    
+		    //VARIABLE PARA MANEJAR MENSAJES DEL CLIENTE
 			String entry;
+			//SOCKET QUE DEJA AL SERVIDOR ESPERANDO
 			ServerSocket socketServidor = new ServerSocket(15210);
 			System.out.println("Ya inicializo el SocketServidor");
+			//ESPERA QUE SE CONECTE EL CLIENTE
 			Socket client = socketServidor.accept();	
 			System.out.println("Ya se conecto el usuario para la descarga");
+			
+			//CANALES PARA INTERCAMBIAR INFORMACION
 			ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 	        	        
@@ -76,8 +80,8 @@ public class ServidorTCP extends Thread{
 	        System.out.println("Parametro P: " + p + "" );
 	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); //CREA LOS PARAMETROS PARA LA CREACION DE LA CLAVE
 	        System.out.println("parametros diffie Hellman generados");
-	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH");
-	        serverKeyGen.initialize(dhParams, new SecureRandom());
+	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH");//DECLARAR EL GENERADOR DE CLAVES EN MODO DH - Diffie Hellman
+	        serverKeyGen.initialize(dhParams, new SecureRandom()); //
 	        KeyAgreement serverKeyAgree = KeyAgreement.getInstance("DH");
 	        KeyPair serverPair = serverKeyGen.generateKeyPair();
 	        Key clientePublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL CLIENTE
@@ -166,19 +170,6 @@ public class ServidorTCP extends Thread{
 	      }
 	   }
 	
-	/**
-	* Crea un numero de formato BigInteger aleatorio. <br>
-	* @param k numero entero mayor que cero
-	*/
-    public BigInteger random(int k){
-    	SecureRandom sr = new SecureRandom();
-        byte[] ba = new byte[k];
-        ba[0] = (byte) (sr.nextInt(9)+49);
-        for (int d = 1;d<k;d++){
-            ba[d] = (byte) (sr.nextInt(10)+48); 
-        }
-        return new BigInteger(new String(ba));
-    }
 
 	@Override
 	public void run() {

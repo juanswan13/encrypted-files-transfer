@@ -12,7 +12,7 @@ public class DecryptFile {
 	public DecryptFile() {
 		
 	}
-	
+// METODO ADAPTADO, OBTENIDO DE: http://www.forosdelweb.com/f45/escribir-fichero-array-bytes-recuperarlos-494509/
 	public void escribirArchivo(byte[] data, String nombreArchivo) {
 		FileOutputStream fop = null;
 		File file;

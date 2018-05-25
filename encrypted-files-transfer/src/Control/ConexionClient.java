@@ -38,7 +38,9 @@ public class ConexionClient extends Thread {
 	        socketCliente.close();
 		}catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"No se pudo establecer una conexion con esa direccion IP",
+					"Finalizado", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

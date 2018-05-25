@@ -16,10 +16,12 @@ import Control.ConexionServer;
 public class InterfazProyecto extends JFrame {
 	private static final long serialVersionUID = 10L;
 	
+	
 	private PanelServidor panelServidor;
 	private String nomb;
 	private File archivo;
 	public InterfazProyecto() {
+		
 		archivo = null;
 		nomb = "";
 		setTitle("Transferencia segura de archivos");
@@ -27,7 +29,7 @@ public class InterfazProyecto extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		//setResizable(false);
-		setSize(516, 366);
+		setSize(355, 315);
 		centrarPantalla();
 		
 		panelServidor = new PanelServidor(this);
@@ -66,6 +68,10 @@ public class InterfazProyecto extends JFrame {
 	public static void main(String[] args) {
 		InterfazProyecto ventana = new InterfazProyecto();
 		ventana.setVisible(true);
+	}
+	
+	public void actualizarLista() {
+		
 	}
 	
 }

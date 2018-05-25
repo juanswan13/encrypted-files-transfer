@@ -208,6 +208,9 @@ public class ClienteTCP extends Thread{
 			
 	}
 	
+	
+	
+	
 	public static String bytesToHex(byte[] data) {
 	      if (data==null) {
 	         return null;
@@ -224,19 +227,7 @@ public class ClienteTCP extends Thread{
 	      }
 	   }
 	
-	/**
-	* Crea un numero de formato BigInteger aleatorio. <br>
-	* @param k numero entero mayor que cero
-	*/
-    public BigInteger random(int k){
-    	SecureRandom sr = new SecureRandom();
-        byte[] ba = new byte[k];
-        ba[0] = (byte) (sr.nextInt(9)+49);
-        for (int d = 1;d<k;d++){
-            ba[d] = (byte) (sr.nextInt(10)+48); 
-        }
-        return new BigInteger(new String(ba));
-    }
+
     
 
 	@Override
