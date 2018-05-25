@@ -18,13 +18,11 @@ public class DecryptFile {
 		FileOutputStream fop = null;
 		File file;
 		try {
-			//file = new File("C:/Users/rubendcm/Documents/Tranferencia");
-			file = new File("C:/Users/Juan K/Documents/Universidad/" + nombreArchivo);
-			// if file doesnt exists, then create it
+			file = new File("./Transferencias/" + nombreArchivo);
+			
 			int cont = 1;
 			while	(file.exists()) {
-				//file = new File("C:/Users/rubendcm/Documents/Tranferencia" + cont);
-				file = new File("C:/Users/Juan K/Documents/Universidad/Tranferencia" + cont);
+				file = new File("./Transferencias/" + nombreArchivo.replace('.', '/').split("/")[0] + cont + "." + nombreArchivo.replace('.', '/').split("/")[1] );
 				cont++;
 			}
 			fop = new FileOutputStream(file);
