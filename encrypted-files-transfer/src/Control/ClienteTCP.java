@@ -128,9 +128,8 @@ public class ClienteTCP extends Thread{
 	        	parametro = inFromServer.readLine(); //MD5 del servidor
 	        	System.out.println("Recibi: "+parametro);
 	        	MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-	        	messageDigest.reset();
-	        	
-	        	archivoDescifrado = descifrar.descifrarArchivo(lectura, claveCliente,params);
+	        	messageDigest.reset();	        	
+	        	archivoDescifrado = descifrar.descifrarArchivo(lectura, claveCliente, params);
 	        	messageDigest.update(archivoDescifrado);
 	        	byte[] resultByte = messageDigest.digest();
 	        	String MD5 = bytesToHex(resultByte);
@@ -140,8 +139,9 @@ public class ClienteTCP extends Thread{
 	        
 	        //RESPONDE AL SERVIDOR EL ESTADO DE LA TRANSFERENCIA
 	        if(correcto) {
+	        	parametro = inFromServer.readLine();
 	        	OutFromClient.write("TRANSFERENCIA CORRECTA\n");
-	        	descifrar.escribirArchivo(archivoDescifrado);
+	        	descifrar.escribirArchivo(archivoDescifrado, parametro);
 	        	System.out.println("Mande transferencia correcta");
 	        }else {
 	        	OutFromClient.write("TRANSFERENCIA INCORRECTA\n");
@@ -152,7 +152,7 @@ public class ClienteTCP extends Thread{
 	        
 	        OutFromClient.close();
 	        socketCliente.close();
-	        System.out.println("Conexión cerrada");
+	        System.out.println("Conexiï¿½n cerrada");
 		}catch(Exception e){
 			e.printStackTrace();
 		}

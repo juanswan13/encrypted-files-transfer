@@ -14,16 +14,17 @@ public class DecryptFile {
 		
 	}
 	
-	public void escribirArchivo(byte[] data) {
+	public void escribirArchivo(byte[] data, String nombreArchivo) {
 		FileOutputStream fop = null;
 		File file;
 		try {
-			file = new File("C:/Users/rubendcm/Documents/Tranferencia");
-
+			//file = new File("C:/Users/rubendcm/Documents/Tranferencia");
+			file = new File("C:/Users/Juan K/Documents/Universidad/" + nombreArchivo);
 			// if file doesnt exists, then create it
 			int cont = 1;
 			while	(file.exists()) {
-				file = new File("C:/Users/rubendcm/Documents/Tranferencia" + cont);
+				//file = new File("C:/Users/rubendcm/Documents/Tranferencia" + cont);
+				file = new File("C:/Users/Juan K/Documents/Universidad/Tranferencia" + cont);
 				cont++;
 			}
 			fop = new FileOutputStream(file);

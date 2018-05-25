@@ -331,7 +331,7 @@ private static final long serialVersionUID = 1877L;
 	         if (returnVal == JFileChooser.APPROVE_OPTION) {
 	              File file = fc.getSelectedFile();
 	              if(file!=null) {
-	              principal.elegirArchivo(file);
+	              principal.elegirArchivo(file, file.getName());
 	              txtNombreArchivo.setText(file.getName());
 	              }
 	         }

@@ -10,11 +10,13 @@ import javax.swing.JOptionPane;
 public class ConexionClient extends Thread {
 	private String ip;
 	private byte[] archivo; 
+	private String nombre;
  	
-	public ConexionClient(File arch, String iP) {
+	public ConexionClient(File arch, String iP, String nomb) {
 		EncryptFile cargarArchivo = new EncryptFile();
 		archivo = cargarArchivo.leerArchivo(arch);
 		ip = iP;
+		nombre= nomb;
 	}
 	
 	public void iniciarProceso() {
@@ -25,7 +27,7 @@ public class ConexionClient extends Thread {
 	        String txt = inFromServer.readLine();
 	        System.out.println(txt);
 	        if(txt.equalsIgnoreCase("ENVIAR")) {
-	        	ServidorTCP server = new ServidorTCP(archivo);
+	        	ServidorTCP server = new ServidorTCP(archivo, nombre);
 	        	System.out.println("Iniciando servidor");
 	        	server.run();
 	        }else {

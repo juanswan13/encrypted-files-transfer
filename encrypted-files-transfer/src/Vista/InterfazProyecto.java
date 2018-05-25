@@ -17,9 +17,11 @@ public class InterfazProyecto extends JFrame {
 	private static final long serialVersionUID = 10L;
 	
 	private PanelServidor panelServidor;
+	private String nomb;
 	private File archivo;
 	public InterfazProyecto() {
 		archivo = null;
+		nomb = "";
 		setTitle("Transferencia segura de archivos");
 		setLayout(new BorderLayout());
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -45,7 +47,7 @@ public class InterfazProyecto extends JFrame {
 	public void iniciarProceso(String ipRemota) {
 		if(archivo!=null) {
 			System.out.println(ipRemota);
-			ConexionClient conexionCliente = new ConexionClient(archivo, ipRemota);
+			ConexionClient conexionCliente = new ConexionClient(archivo, ipRemota, nomb);
 			conexionCliente.start();
 			
 		}
@@ -56,8 +58,9 @@ public class InterfazProyecto extends JFrame {
         }
 	}
 	
-	public void elegirArchivo(File arc) {
+	public void elegirArchivo(File arc, String nom) {
 		archivo = arc;
+		nomb = nom;
 	}
 	
 	public static void main(String[] args) {

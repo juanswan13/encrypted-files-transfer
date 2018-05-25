@@ -23,9 +23,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class ServidorTCP extends Thread{
 	private byte[] archivoSinCifrar;
+	private String nombreArchivo;
 	
-	public ServidorTCP(byte[] arch) {
+	public ServidorTCP(byte[] arch, String nomArch) {
 		archivoSinCifrar = arch;
+		nombreArchivo = nomArch;
 	}
 	
 	/**
@@ -133,6 +135,8 @@ public class ServidorTCP extends Thread{
 	        	OutFromServer.flush();
 	        }
 	        
+	        OutFromServer.write(nombreArchivo+"\n");
+        	OutFromServer.flush();
 	        //ESPERA ESTADO DE LA TRANSFERENCIA
 	        entry = inFromClient.readLine();
 	        System.out.println("From Client: " + entry);
