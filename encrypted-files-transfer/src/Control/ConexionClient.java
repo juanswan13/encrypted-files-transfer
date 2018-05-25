@@ -7,16 +7,20 @@ import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
+import Vista.InterfazProyecto;
+
 public class ConexionClient extends Thread {
 	private String ip;
 	private byte[] archivo; 
 	private String nombre;
+	private InterfazProyecto intd;
  	
-	public ConexionClient(File arch, String iP, String nomb) {
+	public ConexionClient(File arch, String iP, String nomb, InterfazProyecto s) {
 		EncryptFile cargarArchivo = new EncryptFile();
 		archivo = cargarArchivo.leerArchivo(arch);
 		ip = iP;
 		nombre= nomb;
+		intd = s;
 	}
 	
 	public void iniciarProceso() {
@@ -27,7 +31,7 @@ public class ConexionClient extends Thread {
 	        String txt = inFromServer.readLine();
 	        System.out.println(txt);
 	        if(txt.equalsIgnoreCase("ENVIAR")) {
-	        	ServidorTCP server = new ServidorTCP(archivo, nombre);
+	        	ServidorTCP server = new ServidorTCP(archivo, nombre, intd);
 	        	System.out.println("Iniciando servidor");
 	        	server.run();
 	        }else {

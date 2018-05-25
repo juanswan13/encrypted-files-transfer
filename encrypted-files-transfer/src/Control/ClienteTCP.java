@@ -20,14 +20,18 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import Vista.InterfazProyecto;
+
 public class ClienteTCP extends Thread{
 	
 	//IP del servidor remoto 
-	private InetAddress IPServer;	
+	private InetAddress IPServer;
+	private InterfazProyecto intd;
 	
-	public ClienteTCP(InetAddress IPserver) {
+	public ClienteTCP(InetAddress IPserver, InterfazProyecto s) {
 		//Se inicializa IP del servidor
 		IPServer = IPserver;
+		intd = s;
 	}
 	
 	/**
@@ -189,6 +193,7 @@ public class ClienteTCP extends Thread{
 	        	
 	        	//Se guarda el archivo en la carpeta /Transferencia del proyecto
 	        	descifrar.escribirArchivo(archivoDescifrado, parametro);
+	        	intd.actualizarLista(parametro);
 	        	System.out.println("Mande transferencia correcta");
 	        }
 	        //Mensaje de informe de error de la transmision

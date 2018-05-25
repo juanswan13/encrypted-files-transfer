@@ -7,7 +7,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
+import Vista.InterfazProyecto;
+
 public class ConexionServer extends Thread {
+	
+	private InterfazProyecto intd;
+	
+	public ConexionServer(InterfazProyecto s) {
+		intd = s;
+	}
 	
 	public void esperarProceso() {
 		ServerSocket socketServidor;
@@ -22,7 +30,7 @@ public class ConexionServer extends Thread {
 					//Conexion y mensaje con IP remota y confimacion 
 					BufferedWriter OutFromServer = new BufferedWriter( new OutputStreamWriter(client.getOutputStream() ) );
 				    String IPremota= client.getInetAddress().toString();
-				    String msj = "Desde la direccion: " + IPremota + " Desea enviarte un archivo. ¿Quieres recibirlo?";
+				    String msj = "Desde la direccion: " + IPremota + " Desea enviarte un archivo. ï¿½Quieres recibirlo?";
 				    int dialogResult = JOptionPane.showConfirmDialog (null, msj,"Warning",JOptionPane.YES_NO_OPTION);
 				    
 				    //Da orden de enviar al cliente y corre clienteTCP (se invierten roles)
@@ -31,7 +39,7 @@ public class ConexionServer extends Thread {
 				    	OutFromServer.flush();
 				    	System.out.println("ENVIAR transmitido");
 				    	sleep(3000);
-				    	ClienteTCP cliente = new ClienteTCP(client.getInetAddress());
+				    	ClienteTCP cliente = new ClienteTCP(client.getInetAddress(),intd);
 				    	cliente.run();
 				    }
 				    //Da orden de cancelar al cliente y cierra canal

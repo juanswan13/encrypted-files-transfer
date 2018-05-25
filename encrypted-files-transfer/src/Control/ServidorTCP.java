@@ -20,13 +20,17 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import Vista.InterfazProyecto;
+
 public class ServidorTCP extends Thread{
 	private byte[] archivoSinCifrar;
 	private String nombreArchivo;
+	private InterfazProyecto intd;
 	
-	public ServidorTCP(byte[] arch, String nomArch) {
+	public ServidorTCP(byte[] arch, String nomArch, InterfazProyecto s) {
 		archivoSinCifrar = arch;
 		nombreArchivo = nomArch;
+		intd = s;
 	}
 	
 	/**
@@ -148,6 +152,7 @@ public class ServidorTCP extends Thread{
 	        	
 	        } 
 	        System.out.println("Se cierra el socket");
+	        intd.actualizarLista(nombreArchivo);
 	        socketServidor.close();
 		} catch (Exception e) {
 			e.printStackTrace();

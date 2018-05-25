@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -20,8 +21,10 @@ public class InterfazProyecto extends JFrame {
 	private PanelServidor panelServidor;
 	private String nomb;
 	private File archivo;
+	private ArrayList<String> transfer;
 	public InterfazProyecto() {
-		
+		transfer = new ArrayList<String>();
+		transfer.add("Archivos Transferidos:");
 		archivo = null;
 		nomb = "";
 		setTitle("Transferencia segura de archivos");
@@ -37,7 +40,7 @@ public class InterfazProyecto extends JFrame {
 		
 		add(panelServidor, BorderLayout.CENTER);
 	
-		ConexionServer conexionServer = new ConexionServer();
+		ConexionServer conexionServer = new ConexionServer(this);
 		conexionServer.start();
 	}
 	
@@ -49,7 +52,7 @@ public class InterfazProyecto extends JFrame {
 	public void iniciarProceso(String ipRemota) {
 		if(archivo!=null) {
 			System.out.println(ipRemota);
-			ConexionClient conexionCliente = new ConexionClient(archivo, ipRemota, nomb);
+			ConexionClient conexionCliente = new ConexionClient(archivo, ipRemota, nomb, this);
 			conexionCliente.start();
 			
 		}
@@ -70,8 +73,9 @@ public class InterfazProyecto extends JFrame {
 		ventana.setVisible(true);
 	}
 	
-	public void actualizarLista() {
-		
+	public void actualizarLista(String data) {
+		transfer.add("-"+data);
+		panelServidor.getLista().setListData(transfer.toArray());
 	}
 	
 }

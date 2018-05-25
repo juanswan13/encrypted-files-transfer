@@ -23,12 +23,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
 
 
 public class PanelServidor extends JPanel implements ActionListener{
@@ -42,6 +44,7 @@ private static final long serialVersionUID = 1877L;
 	private JProgressBar progressBar;
 	private JButton btnSubir, btnEnviar;
 	private JList lista;
+	private DefaultTableModel modelo;
 	private JFileChooser fc;
 	
 	public PanelServidor(InterfazProyecto interfaz){
@@ -354,7 +357,10 @@ private static final long serialVersionUID = 1877L;
 	  public void setImagen(String nombreImagen) {
 	      this.setImagen(nombreImagen);
 	    }
-	 
+	  
+	 public JList getLista() {
+		return lista;
+	}
 
 	/**
 	 * @param principal the principal to set
