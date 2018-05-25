@@ -11,9 +11,10 @@ public class ConexionClient extends Thread {
 	private String ip;
 	private byte[] archivo; 
  	
-	public ConexionClient(File arch) {
+	public ConexionClient(File arch, String iP) {
 		EncryptFile cargarArchivo = new EncryptFile();
 		archivo = cargarArchivo.leerArchivo(arch);
+		ip = iP;
 	}
 	
 	public void iniciarProceso() {

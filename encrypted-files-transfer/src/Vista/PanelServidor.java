@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.net.InetAddress;
-
+import java.net.DatagramSocket;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -58,7 +58,9 @@ private static final long serialVersionUID = 1877L;
 //DISEÑO DE LA LINEA DE IP.
 	    String ipLoc = "";
 	    try {
-	    	ipLoc = InetAddress.getLocalHost().getHostAddress();
+	    	 DatagramSocket socket = new DatagramSocket();
+	    	 socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+	    	 ipLoc = socket.getLocalAddress().getHostAddress();
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }

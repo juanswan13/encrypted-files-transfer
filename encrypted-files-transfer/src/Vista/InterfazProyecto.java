@@ -43,7 +43,7 @@ public class InterfazProyecto extends JFrame {
 	}
 	public void iniciarProceso() {
 		if(archivo!=null) {
-			ConexionClient conexionCliente = new ConexionClient(archivo);
+			ConexionClient conexionCliente = new ConexionClient(archivo, "127.0.0.1");
 			conexionCliente.start();
 			
 		}
