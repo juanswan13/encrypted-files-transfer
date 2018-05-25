@@ -42,10 +42,10 @@ public class InterfazProyecto extends JFrame {
 		Dimension ventana = getSize();
 		setLocation((pantalla.width - ventana.width) / 2, (pantalla.height - ventana.height) / 2);
 	}
-	public void iniciarProceso() {
+	public void iniciarProceso(String ipRemota) {
 		if(archivo!=null) {
-			//String ip = "."
-			ConexionClient conexionCliente = new ConexionClient(archivo, "127.0.0.1");
+			System.out.println(ipRemota);
+			ConexionClient conexionCliente = new ConexionClient(archivo, ipRemota);
 			conexionCliente.start();
 			
 		}

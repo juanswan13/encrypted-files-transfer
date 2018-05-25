@@ -163,8 +163,10 @@ private static final long serialVersionUID = 1877L;
 	    txtIpOctR1 = new JTextField(3);
 	    txtIpOctR1.addKeyListener(new KeyListener(){
 	    	public void keyTyped(KeyEvent e){
-	    		if (txtIpOctR1.getText().length()== 3)
-	    	 	     e.consume();
+	    		char c= e.getKeyChar(); 
+	    		if (txtIpOctR1.getText().length()== 3) {
+	    			e.consume();
+	    		}    
 	    		if (txtIpOctR1.getText().length() == 2)
 	    			 txtIpOctR2.requestFocus();
 	    	}
@@ -334,7 +336,8 @@ private static final long serialVersionUID = 1877L;
 	              }
 	         }
 		}else if(p.equals("enviar")) {
-			principal.iniciarProceso();
+			String ip = txtIpOctR1.getText() + "." + txtIpOctR2.getText() + "." + txtIpOctR3.getText() + "." + txtIpOctR4.getText()+"";
+			principal.iniciarProceso(ip);
 		}
 	}
 
