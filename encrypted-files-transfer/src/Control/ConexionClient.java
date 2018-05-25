@@ -20,7 +20,7 @@ public class ConexionClient extends Thread {
 	public void iniciarProceso() {
 		try {
 			Socket socketCliente = new Socket(ip, 15200);
-			
+			System.out.println("socket iniciado");
 	        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
  
 	        String txt = inFromServer.readLine();

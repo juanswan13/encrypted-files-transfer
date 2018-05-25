@@ -145,7 +145,7 @@ public class ServidorTCP extends Thread{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		IntercambiarArchivos();
 	}
 
 }
