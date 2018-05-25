@@ -22,7 +22,8 @@ public class InterfazProyecto extends JFrame {
 		archivo = null;
 		setTitle("Transferencia segura de archivos");
 		setLayout(new BorderLayout());
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		//setResizable(false);
 		setSize(516, 366);
 		centrarPantalla();
@@ -31,7 +32,7 @@ public class InterfazProyecto extends JFrame {
 		panelServidor.setVisible(true);
 		
 		add(panelServidor, BorderLayout.CENTER);
-		
+	
 		ConexionServer conexionServer = new ConexionServer();
 		conexionServer.start();
 	}
@@ -43,6 +44,7 @@ public class InterfazProyecto extends JFrame {
 	}
 	public void iniciarProceso() {
 		if(archivo!=null) {
+			//String ip = "."
 			ConexionClient conexionCliente = new ConexionClient(archivo, "127.0.0.1");
 			conexionCliente.start();
 			
