@@ -38,18 +38,21 @@ public class ServidorTCP extends Thread{
 	*/
 	public void IntercambiarArchivos() {
 		try {
-			int k=6;
 			int bitLength = 1024;
 		    BigInteger p;
 		    BigInteger g;
 		    String MD5 = "";
 		    EncryptFile encrypt = new EncryptFile();
-		    
+		    //VARIABLE PARA MANEJAR MENSAJES DEL CLIENTE
 			String entry;
+			//SOCKET QUE DEJA AL SERVIDOR ESPERANDO
 			ServerSocket socketServidor = new ServerSocket(15210);
 			System.out.println("Ya inicializo el SocketServidor");
+			//ESPERA QUE SE CONECTE EL CLIENTE
 			Socket client = socketServidor.accept();	
 			System.out.println("Ya se conecto el usuario para la descarga");
+			
+			//CANALES PARA INTERCAMBIAR INFORMACION
 			ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
 	        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 	        	        
@@ -78,8 +81,8 @@ public class ServidorTCP extends Thread{
 	        System.out.println("Parametro P: " + p + "" );
 	        DHParameterSpec dhParams = new  DHParameterSpec(g, p); //CREA LOS PARAMETROS PARA LA CREACION DE LA CLAVE
 	        System.out.println("parametros diffie Hellman generados");
-	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH");
-	        serverKeyGen.initialize(dhParams, new SecureRandom());
+	        KeyPairGenerator serverKeyGen = KeyPairGenerator.getInstance("DH");//DECLARAR EL GENERADOR DE CLAVES EN MODO DH - Diffie Hellman
+	        serverKeyGen.initialize(dhParams, new SecureRandom()); //
 	        KeyAgreement serverKeyAgree = KeyAgreement.getInstance("DH");
 	        KeyPair serverPair = serverKeyGen.generateKeyPair();
 	        Key clientePublicKey = (Key) ois.readObject(); //RECIBE CLAVE PUBLICA DEL CLIENTE
